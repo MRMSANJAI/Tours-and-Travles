@@ -24,17 +24,17 @@ app.get("/",(req ,res)=>{
 //Image storage
  
 const storage = multer.diskStorage({
-    destination:'./uplode/images',
+    destination:'./upload/images',
     filename:(req,file,cb)=>{
          return cb(null,`${file.fieldname}_${Date.now()}${path.extname(file.originalname)}`)
     }
 })
-const uplode = multer({storage:storage})
+const upload = multer({storage:storage})
 
-//Creat uplode endpoint
-app.use('/images',express.static('uplode/images'))
+//Creat upload endpoint
+app.use('/images',express.static('upload/images'))
 
-app.post("/uplode",uplode.single('product'),(req,res)=>{
+app.post("/upload",upload.single('product'),(req,res)=>{
     res.json({
         success:1,
         image_url:`http://localhost:${port}/images/${req.file.filename}`
@@ -124,6 +124,84 @@ app.get("/allproducts",async(req,res)=>{
     console.log("All Products Fetched")
     res.send(products)
 })
+
+
+//Schema For user Model
+
+const Users = mongoose.model('Users',{
+    name:{
+        type:String,
+    },
+    email:{
+        type:String,
+        unique:true,
+    },
+    password:{
+        type:String,
+    },
+    cartData:{
+        type:Object,
+    },
+    date:{
+        type:Date,
+        default:Date.now,
+    }
+})
+
+//Creating End Point for Registering User
+
+app.post('/signup',async(req,res)=>{
+    
+    let check = await Users.findOne({email:req.body.email});
+    if(check){
+        return res.status(400).json({success:false,errors:"existing user found with same email address"})
+    }
+    let cart ={};
+    for (let i = 0; i < 300; i++) {
+        cart[i]=0;
+    }
+    const user = new Users({
+        name:req.body.username,
+        email:req.body.email,
+        password:req.body.password,
+        cartData:cart,
+    })
+    await user.save();
+
+    const data={
+        user:{
+            id:user.id
+        }
+    }
+
+    const token = jwt.sign(data,'secert_ecom');
+    res.json({success:true,token})
+})
+
+//Creating End Point for userlogin
+
+app.post('/login',async(req,res)=>{
+    let user = await Users.findOne({email:req.body.email});
+    if(user){
+        const passCompare = req.body.password === user.password;
+        if(passCompare){
+            const data ={
+                user:{
+                    id:user.id
+                }
+            }
+            const token = jwt.sign(data,'secret_ecom');
+            res.json({success:true,token});
+        }
+        else{
+            res.json({success:false,error:"worng password"});
+        }
+    }
+    else{
+        res.json({success:false,errors:"wrong Email Id"})
+    }
+})
+
 
 app.listen(port,(error)=>{
     if(!error){
