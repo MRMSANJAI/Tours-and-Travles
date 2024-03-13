@@ -23,10 +23,10 @@
     gap: 10px;
 }
 @media(max-width:1280px){
-    .newcollection h1{
+    .newcollections h1{
         font-size: 40px;
     }
-    .newcollection hr{
+    .newcollections hr{
         width: 160px;
         height: 4px;
     }
@@ -37,10 +37,10 @@
 } 
 @media(max-width:1024px){
    
-    .newcollection h1{
+    .newcollections h1{
         font-size: 30px;
     }
-    .newcollection hr{
+    .newcollections hr{
         width: 120px;
         height: 3px;
     }
@@ -49,23 +49,26 @@
         margin-top: 20px;
     }
 }
-@media(max-width:80px){
-    .newcollection{
-       
+@media(max-width:720px){
+    .newcollections{
+       margin-top: 100px;
         gap: 6px;
     }
-    .newcollection h1{
+    .newcollections h1{
         font-size: 20px;
     }
-    .newcollection hr{
+    .newcollections hr{
         width: 100px;
     }
     .collections{
         gap: 5px;
     }
 }
-@media(max-width:500px){
+@media(max-width:480px){
     
+    .newcollections{
+         gap: 2px;
+     }
     .collections{
         display: grid;
         grid-template-columns: 1fr 1fr;
